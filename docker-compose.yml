@@ -1,0 +1,25 @@
+version: '3'
+
+services:
+  tweet:
+    build:
+      context: .
+      dockerfile: Dockerfile
+    tty: true
+    working_dir: '/root/src'
+    environment:
+      - PULSE_SERVER=${PULSE_SERVER}
+      - API_KEY=''
+      - API_SECRET=''
+      - ACCESS_TOKEN=''
+      - ACCESS_TOKEN_SECRET=''
+      - USER_ID = ''
+    volumes:
+      - ./:/root/src
+      - ~/.config/pulse:/root/.config/pulse
+    depends_on:
+      - voice
+  voice:
+    image: "voicevox/voicevox_engine:cpu-ubuntu20.04-latest"
+    ports:
+      - "127.0.0.1:50021:50021"
