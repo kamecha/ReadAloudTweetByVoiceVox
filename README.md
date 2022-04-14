@@ -1,0 +1,2 @@
+# ReadAloudTweetByVoiceVox
+twitterのタイムラインをVoiceVox使って読んでもらう
