@@ -1,17 +1,19 @@
 import json
 import requests
 import urllib.parse
-import playsound
+import subprocess
 
 # curl -s \
 #     -X POST \
 #     "localhost:50021/audio_query?speaker=1"\
 #     --get --data-urlencode text@text.txt \
 #     > query.json
-def makeAudioQuery(text):
+
+
+def makeAudioQuery(text, speaker):
     url = 'http://voice:50021/audio_query'
     encodeText = urllib.parse.quote(text)
-    url = url + '?' + 'speaker=1' + '&' + 'text=' + encodeText
+    url = url + '?' + 'speaker=' + speaker + '&' + 'text=' + encodeText
     response = requests.post(url)
     return response
 
@@ -21,20 +23,33 @@ def makeAudioQuery(text):
 #     -d @query.json \
 #     localhost:50021/synthesis?speaker=1 \
 #     > audio.wav
-def makeAudioWav(query):
-    url = 'http://voice:50021/synthesis' + '?speaker=1'
+
+
+def makeAudioWav(query, speaker, wav):
+    url = 'http://voice:50021/synthesis' + '?speaker=' + speaker
     header = {
         "Content-Type": "application/json"
     }
     res = requests.post(url, headers=header, json=query)
-    return res
+    f = open(wav, 'wb')
+    f.write(res.content)
+    f.close
 
-res = makeAudioQuery('おっぱい')
-jsonQuery = json.loads(res.text)
-res = makeAudioWav(jsonQuery)
+# start audio
 
-f = open('test.wav', 'wb')
-f.write(res.content)
-f.close
 
-playsound.playsound('test.wav')
+def playAudio(wav):
+    subprocess.run(['paplay', wav])
+
+# play input text
+
+
+def playText(text):
+    wav = 'test.wav'
+    res = makeAudioQuery(text, '2')
+    jsonQuery = json.loads(res.text)
+    makeAudioWav(jsonQuery, '2', wav)
+    playAudio(wav)
+
+
+# playText('四国めたんちゃんはおちんぽミルクが大好物なのだ')
